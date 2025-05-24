@@ -2,3 +2,38 @@
 @import 'primereact/resources/primereact.min.css';
 @import 'primeicons/primeicons.css';
 @import 'primeflex/primeflex.css';
+
+:root {
+  --primary-text-color: rgba(7, 99, 231, 1);
+  --primary-bg: rgba(7, 99, 231, 1);
+  --secondary-color:rgba(45, 62, 80, 1);
+  --secondary-text-color:rgba(75, 85, 99, 1)
+}
+
+/* === UTILIDADES CSS === */
+.text-primary {
+  color: var(--primary-text-color) !important;
+}
+
+.bg-primary {
+  background-color: var(--primary-bg) !important;
+}
+
+.secondary-bg{
+    background-color: var(--secondary-color) !important;
+}
+
+.secondary-table-text{
+    color: var(--secondary-text-color)!important;
+}
+
+.custom-capitalize {
+    text-transform: lowercase;
+  }
+  
+.custom-capitalize::first-letter {
+    text-transform: uppercase;
+  }
+
+
+  
