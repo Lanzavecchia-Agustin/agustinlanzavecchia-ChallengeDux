@@ -8,7 +8,7 @@ import { User } from '../types';
 import { TableFilters } from './TableFilters';
 import { Button } from '../../../components/atoms/Button';
 
-export const UsersPageLayout = () => {
+export const UsersView = () => {
   return (
     <div className="p-4">
       <div className="flex justify-content-between align-items-center mb-4">
@@ -39,4 +39,4 @@ export const UsersPageLayout = () => {
   );
 };
 
-export default UsersPageLayout;
+export default UsersView;
