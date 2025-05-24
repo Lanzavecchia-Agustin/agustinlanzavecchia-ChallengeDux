@@ -17,16 +17,27 @@ export const UserTable: React.FC<UserTableProps> = ({ users, loading = false, on
     loading={loading}
     rowHover
     onRowClick={(e) => onRowSelect?.(e.data as User)}
-    className="surface-card border-round shadow-1"
   >
     <Column field="id" header="ID" sortable style={{ width: '25%' }} />
     <Column
       field="usuario"
       header="Usuario"
       sortable
-      body={(row) => <a className="text-primary">{row.usuario}</a>}
+      body={(row) => (
+        <p className="text-primary underline font-bold custom-capitalize">{row.usuario}</p>
+      )}
     />
-    <Column field="estado" header="Estado" sortable />
-    <Column field="sector" header="Sector" sortable />
+    <Column
+      field="estado"
+      header="Estado"
+      sortable
+      body={(row) => <p className="custom-capitalize secondary-table-text">{row.estado}</p>}
+    />
+    <Column
+      field="sector"
+      header="Sector"
+      sortable
+      body={(row) => <p className="custom-capitalize secondary-table-text">{row.sector}</p>}
+    />
   </DataTable>
 );
