@@ -7,7 +7,7 @@ import type { FilterOption } from '../../../components/molecules/FilterSelect';
 import type { UserStatus } from '../constants';
 import { Button } from '../../../components/atoms/Button';
 
-interface TableFiltersProps {
+interface UserTableFiltersProps {
   searchTerm: string;
   onSearchTermChange: (term: string) => void;
   statusOptions: FilterOption<UserStatus>[];
@@ -19,7 +19,7 @@ interface TableFiltersProps {
   backgroundColor?: string;
 }
 
-export const TableFilters: React.FC<TableFiltersProps> = ({
+export const UserTableFilters: React.FC<UserTableFiltersProps> = ({
   searchTerm,
   onSearchTermChange,
   statusOptions,

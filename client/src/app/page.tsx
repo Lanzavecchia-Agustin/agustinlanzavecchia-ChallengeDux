@@ -1,5 +1,5 @@
 import UsersView from './modules/users/components/UsersView';
 
-export default async function UsersPage() {
+export default function UsersPage() {
   return <UsersView />;
 }

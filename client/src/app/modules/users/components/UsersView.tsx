@@ -4,8 +4,7 @@ import React from 'react';
 import { UserTable } from './UserTable';
 import { Pagination } from '../../../components/organisms/Pagination';
 import { UserFormModal } from './UserFormModal';
-import { User } from '../types';
-import { TableFilters } from './TableFilters';
+import { UserTableFilters } from './UserTableFilters';
 import { Button } from '../../../components/atoms/Button';
 
 export const UsersView = () => {
@@ -18,7 +17,7 @@ export const UsersView = () => {
       </div>
 
       {/* TODO: pasar las props necesarias */}
-      <TableFilters />
+      <UserTableFilters />
 
       {/* TODO: pasar usuarios reales */}
       {/* TODO: pasar total de registros real */}
