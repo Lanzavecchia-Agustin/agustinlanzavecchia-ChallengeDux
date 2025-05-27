@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import { PrimeReactProvider } from 'primereact/api';
 import './globals.css';
-import { Header } from './components/organisms/Header';
-import { Sidebar } from './components/organisms/Sidebar';
+import { QueryClientProviderWrapper } from './providers/query-client-provider';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -26,10 +25,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es">
       <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ margin: 0 }}>
         <PrimeReactProvider>
-          <Header />
           <div className="flex min-h-screen ">
-            <Sidebar />
-            <main className="flex flex-column flex-grow-1 px-4 h-full">{children}</main>
+            <QueryClientProviderWrapper>
+              <main className="flex flex-column flex-grow-1 h-full">{children}</main>
+            </QueryClientProviderWrapper>
           </div>
         </PrimeReactProvider>
       </body>
