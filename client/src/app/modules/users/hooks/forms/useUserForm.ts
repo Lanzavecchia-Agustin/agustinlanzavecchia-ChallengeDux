@@ -1,95 +1,75 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import type { FormPayload, User } from '../../types';
-import { UserStatus } from '../../constants';
+import { DEFAULT_SECTOR, UserStatus } from '../../constants';
+import type { User, CreateUserDto, UpdateUserDto } from '../../types';
 import { useCreateUser } from '../querys/useCreateUser';
 import { useUpdateUser } from '../querys/useUpdateUser';
 
-/* ---------- Estado inicial ---------- */
-const emptyForm: FormPayload = {
-  usuario: '',
-  estado: UserStatus.ACTIVO,
-  sector: 0, // 0  ➜  “sin sector seleccionado”
-};
+function buildInitialForm(user?: User): CreateUserDto {
+  return {
+    usuario: user?.usuario ?? '',
+    estado: user?.estado ?? UserStatus.ACTIVO,
+    sector: user?.sector ?? DEFAULT_SECTOR,
+  };
+}
 
-/* ---------- Hook ---------- */
 export function useUserForm() {
-  /* UI state */
-  const [modalVisible, setModalVisible] = useState(false);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [form, setForm] = useState<FormPayload>(emptyForm);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [formValues, setFormValues] = useState<CreateUserDto>(() => buildInitialForm());
 
-  /* Data-mutations */
   const createUser = useCreateUser();
   const updateUser = useUpdateUser();
 
-  /* Helpers ------------------------------------------------------ */
-
-  /** Abre modal para CREACIÓN */
   const openCreate = () => {
-    setEditingUser(null);
-    setForm(emptyForm);
-    setModalVisible(true);
+    setCurrentUser(null);
+    setFormValues(buildInitialForm());
+    setModalOpen(true);
   };
 
-  /** Abre modal para EDICIÓN */
   const openEdit = (user: User) => {
-    setEditingUser(user);
-    setForm({
-      usuario: user.usuario,
-      estado: user.estado,
-      sector: user.sector,
-    });
-    setModalVisible(true);
+    setCurrentUser(user);
+    setFormValues(buildInitialForm(user));
+    setModalOpen(true);
   };
 
-  /** Cierra modal y reinicia estado local */
-  const close = () => {
-    setModalVisible(false);
-    setEditingUser(null);
-    setForm(emptyForm);
+  const closeForm = () => {
+    setModalOpen(false);
+    setCurrentUser(null);
+    setFormValues(buildInitialForm());
   };
 
-  /** Handler genérico para cambiar cualquier campo */
-  const handleChange = useCallback(
-    <K extends keyof FormPayload>(field: K, value: FormPayload[K]) => {
-      setForm((prev) => ({ ...prev, [field]: value }));
+  const setField = useCallback(
+    <K extends keyof CreateUserDto>(field: K, value: CreateUserDto[K]) => {
+      setFormValues((prev) => ({ ...prev, [field]: value }));
     },
     [],
   );
 
-  /** Enviar al backend */
-  const handleSubmit = async () => {
+  const submitForm = async () => {
     try {
-      if (editingUser) {
-        await updateUser.mutateAsync({ id: editingUser.id, payload: form });
+      if (currentUser) {
+        await updateUser.mutateAsync({ id: currentUser.id, payload: formValues as UpdateUserDto });
       } else {
-        await createUser.mutateAsync(form);
+        await createUser.mutateAsync(formValues);
       }
-      close();
-    } catch (err) {
-      // TODO: mostrar toast / alert al usuario
-      console.error('❌ Error al guardar usuario:', err);
+      closeForm();
+    } catch (error) {
+      console.error('Error saving user:', error);
     }
   };
 
-  /* ---------- API pública del hook ---------- */
   return {
-    /* estado del modal */
-    editingUser,
-    modalVisible,
+    modalOpen,
+    currentUser,
+    formValues,
     openCreate,
     openEdit,
-    close,
-
-    /* valores del formulario */
-    form,
-    handleChange,
-
-    /* submit & loading */
-    handleSubmit,
-    loading: createUser.isPending || updateUser.isPending,
-    isEdit: Boolean(editingUser),
+    closeForm,
+    setField,
+    submitForm,
+    isLoading: createUser.isPending || updateUser.isPending,
+    isEdit: Boolean(currentUser),
   };
 }

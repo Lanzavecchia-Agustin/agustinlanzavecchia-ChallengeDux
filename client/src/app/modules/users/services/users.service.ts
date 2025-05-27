@@ -1,21 +1,19 @@
 import { apiFetch } from '@/app/lib/api';
-import type { User, CreateUserDto, UpdateUserDto } from '../types';
-import { UserStatus } from '../constants';
+import type { ListUsersParams, User, CreateUserDto, UpdateUserDto } from '../types';
 
 const ENDPOINT = '/personal';
 
 export const usersService = {
-  list(params: { page?: number; limit?: number; q?: string; estado?: UserStatus }) {
-    const { page = 1, limit = 10, q, estado } = params;
-    const search = new URLSearchParams({
+  list(params: ListUsersParams) {
+    const { page = 1, limit = 10, q, estado, sector } = params;
+    const query = new URLSearchParams({
       _page: String(page),
       _limit: String(limit),
       ...(q ? { q } : {}),
       ...(estado ? { estado } : {}),
+      ...(sector != null ? { sector: String(sector) } : {}),
     });
-    return apiFetch<User[]>(`${ENDPOINT}?${search.toString()}`, {
-      next: { tags: ['users'] },
-    });
+    return apiFetch<User[]>(`${ENDPOINT}?${query}`);
   },
 
   create(payload: CreateUserDto) {
@@ -33,6 +31,8 @@ export const usersService = {
   },
 
   remove(id: string) {
-    return apiFetch<void>(`${ENDPOINT}/${id}`, { method: 'DELETE' });
+    return apiFetch<void>(`${ENDPOINT}/${id}`, {
+      method: 'DELETE',
+    });
   },
 };
