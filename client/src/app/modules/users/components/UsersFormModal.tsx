@@ -1,54 +1,44 @@
 'use client';
 
+import React from 'react';
 import { Dialog } from 'primereact/dialog';
 import { Input } from '@/app/components/atoms/Input';
-import { Button } from '@/app/components/atoms/Button';
 import { Dropdown } from 'primereact/dropdown';
 import { Label } from '@/app/components/atoms/Label';
-import { FilterOption } from '@/app/components/molecules/FilterSelect';
-import type { FormPayload, User } from '../types';
-import { UserStatus } from '../constants';
+import { Button } from '@/app/components/atoms/Button';
+import type { CreateUserDto, User } from '../types';
+import { STATUS_OPTIONS, DEFAULT_SECTOR, UserStatus, SECTOR_OPTIONS } from '../constants';
 
-/* ---------- Props ---------- */
 interface UsersFormModalProps {
   visible: boolean;
-  isEdit: boolean;
-
-  user: User | null;
-
-  /* Datos controlados */
-  form: FormPayload;
-  onChange: <K extends keyof FormPayload>(field: K, value: FormPayload[K]) => void;
-
-  /* UX */
-  onHide: () => void;
+  onClose: () => void;
   onSubmit: () => void;
-  loading?: boolean;
-
-  /* Listas */
-  sectors: FilterOption<number>[];
-  statuses: FilterOption<UserStatus>[];
+  isLoading?: boolean;
+  isEdit: boolean;
+  user: User | null;
+  formData: CreateUserDto;
+  setField: <K extends keyof CreateUserDto>(field: K, value: CreateUserDto[K]) => void;
 }
 
-/* ---------- Componente ---------- */
 export const UsersFormModal: React.FC<UsersFormModalProps> = ({
   visible,
-  isEdit,
-  form,
-  onChange,
-  onHide,
+  onClose,
   onSubmit,
-  loading = false,
-  sectors,
-  statuses,
+  isLoading = false,
+  isEdit,
+  user,
+  formData,
+  setField,
 }) => {
+  const sectorValue = formData.sector;
+
   return (
     <Dialog
-      header={isEdit ? 'Editar Usuario' : 'Nuevo Usuario'}
+      header={isEdit ? 'Editar usuario' : 'Nuevo usuario'}
       visible={visible}
-      style={{ width: '40rem' }}
       modal
-      onHide={onHide}
+      onHide={onClose}
+      style={{ width: '40rem' }}
     >
       <form
         className="p-fluid"
@@ -60,13 +50,13 @@ export const UsersFormModal: React.FC<UsersFormModalProps> = ({
         <div className="grid formgrid">
           {/* Usuario */}
           <div className="field col-12">
-            <Label htmlFor="usuario">Nombre de Usuario</Label>
+            <Label htmlFor="usuario">Nombre de usuario</Label>
             <Input
               id="usuario"
               name="usuario"
-              placeholder="Ingrese el nombre del usuario"
-              value={form.usuario}
-              onChange={(e) => onChange('usuario', e.target.value)}
+              placeholder="Nombre único"
+              value={formData.usuario}
+              onChange={(e) => setField('usuario', e.target.value)}
               required
             />
           </div>
@@ -76,50 +66,44 @@ export const UsersFormModal: React.FC<UsersFormModalProps> = ({
             <Label htmlFor="estado">Estado</Label>
             <Dropdown
               id="estado"
-              options={statuses}
+              options={STATUS_OPTIONS}
               optionLabel="label"
               optionValue="value"
-              placeholder="Seleccionar estado"
-              className="w-full"
-              value={form.estado}
-              onChange={(e) => onChange('estado', e.value)}
+              value={formData.estado}
+              onChange={(e) => setField('estado', e.value as UserStatus)}
               required
             />
           </div>
 
-          {/* Sector */}
           <div className="field col-12">
             <Label htmlFor="sector">Sector</Label>
             <Dropdown
               id="sector"
-              options={sectors}
+              options={SECTOR_OPTIONS}
               optionLabel="label"
               optionValue="value"
               placeholder="Seleccionar sector"
               className="w-full"
-              value={form.sector}
-              onChange={(e) => onChange('sector', e.value)}
+              value={formData.sector}
+              onChange={(e) => setField('sector', e.value)}
               required
             />
           </div>
         </div>
 
-        {/* Botones */}
-        <div className="flex justify-content-end gap-2 mt-4">
+        <div className="flex justify-end gap-2 mt-4">
           <Button
             type="submit"
             label={isEdit ? 'Actualizar' : 'Crear'}
-            icon="pi pi-check"
-            disabled={loading}
-            loading={loading}
+            loading={isLoading}
+            disabled={isLoading}
           />
           <Button
+            type="button"
             label="Cancelar"
-            icon="pi pi-times"
             className="p-button-outlined"
             severity="secondary"
-            type="button"
-            onClick={onHide}
+            onClick={onClose}
           />
         </div>
       </form>

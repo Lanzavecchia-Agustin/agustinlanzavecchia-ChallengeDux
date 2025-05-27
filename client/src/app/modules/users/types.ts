@@ -2,27 +2,35 @@ import type { UserStatus } from './constants';
 
 /** Registro completo que devuelve la API */
 export interface User {
-  id: string; // el json-server genera string numérica
+  id: string;
   usuario: string;
-  estado: UserStatus; // 👈 mismo nombre que en el back
+  estado: UserStatus;
   sector: number;
 }
 
+/** Parámetros para listar */
 export interface ListUsersParams {
   page?: number;
   limit?: number;
   q?: string;
   estado?: UserStatus;
+  sector?: number;
 }
 
-export type FormPayload = {
+/** Para leer de la URL */
+export interface SearchParams {
+  page?: string;
+  q?: string;
+  estado?: UserStatus | string;
+  sector?: string;
+}
+
+/** DTO para creación: sector obligatorio */
+export interface CreateUserDto {
   usuario: string;
   estado: UserStatus;
   sector: number;
-};
+}
 
-/** DTO usado en POST / personal */
-export type CreateUserDto = Omit<User, 'id'>;
-
-/** DTO usado en PATCH / personal/:id  (todos opcionales) */
+/** DTO para edición: todos opcionales */
 export type UpdateUserDto = Partial<CreateUserDto>;

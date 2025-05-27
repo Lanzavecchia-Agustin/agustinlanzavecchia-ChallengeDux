@@ -1,54 +1,50 @@
-// lib/api.ts
 import { z } from 'zod';
 
 const API_BASE =
-  typeof window === 'undefined'
-    ? process.env.API_BASE // Servidor (SSR)
-    : process.env.NEXT_PUBLIC_API_BASE; // Cliente (CSR)
+  typeof window === 'undefined' ? process.env.API_BASE! : process.env.NEXT_PUBLIC_API_BASE!;
+const DEFAULT_SECTOR = Number(process.env.NEXT_PUBLIC_SECTOR_ID!);
 
-const SECTOR = process.env.NEXT_PUBLIC_SECTOR_ID;
+if (!API_BASE) throw new Error('❌ API_BASE not defined.');
+if (!DEFAULT_SECTOR) throw new Error('❌ NEXT_PUBLIC_SECTOR_ID not defined.');
 
-/**
- * Construye la URL completa con sector incluido.
- */
-function buildUrl(path: string): URL {
-  if (!API_BASE) throw new Error('❌ API_BASE no está definido en las variables de entorno.');
-  if (!SECTOR) throw new Error('❌ NEXT_PUBLIC_SECTOR_ID no está definido.');
-
+/** Solo para GET: añade ?sector=DEFAULT_SECTOR si no existe */
+function buildGetUrl(path: string): URL {
   const url = new URL(`${API_BASE}${path}`);
-  url.searchParams.set('sector', SECTOR);
+  if (!url.searchParams.has('sector')) {
+    url.searchParams.set('sector', String(DEFAULT_SECTOR));
+  }
   return url;
 }
 
 /**
- * Fetch genérico para API con soporte para:
- * - Tipado de respuesta genérico <T>
- * - Validación opcional con Zod
- * - Uso tanto desde SSR como CSR
+ * apiFetch genérico:
+ * - GET → usa buildGetUrl (añade sector en query)
+ * - POST/PATCH/DELETE → respeta payload.sector; inyecta DEFAULT_SECTOR solo si no viene
  */
 export async function apiFetch<T>(
   path: string,
-  options?: RequestInit & {
-    /**
-     * Opciones específicas de Next.js (SSR caching)
-     */
-    next?: NextFetchRequestConfig;
-
-    /**
-     * Esquema Zod opcional para validar respuesta
-     */
-    schema?: z.ZodType<T>;
-  },
+  options: RequestInit & { schema?: z.ZodType<T> } = {},
 ): Promise<T> {
-  const url = buildUrl(path);
+  const method = (options.method ?? (options.body ? 'POST' : 'GET')).toUpperCase();
+  const url = method === 'GET' ? buildGetUrl(path) : new URL(`${API_BASE}${path}`);
+
+  let body = options.body as string | undefined;
+  if (method !== 'GET') {
+    const payload = body ? JSON.parse(body) : {};
+    if (payload.sector == null) {
+      payload.sector = DEFAULT_SECTOR;
+    }
+    body = JSON.stringify(payload);
+  }
 
   const res = await fetch(url.toString(), {
+    ...options,
+    method,
+    body,
     headers: {
       'Content-Type': 'application/json',
-      ...(options?.headers ?? {}),
+      ...(options.headers ?? {}),
     },
-    ...options,
-    method: options?.body && !options?.method ? 'POST' : options?.method,
   });
 
   if (!res.ok) {
@@ -57,20 +53,13 @@ export async function apiFetch<T>(
   }
 
   const data = (await res.json()) as T;
-
-  // Validación opcional con Zod
-  if (options?.schema) {
+  if (options.schema) {
     try {
       options.schema.parse(data);
     } catch (e) {
-      console.error('❌ Error de validación con Zod:', e);
-      throw new Error('Respuesta inválida según el esquema definido.');
+      console.error('❌ Zod validation error:', e);
+      throw new Error('Invalid response format.');
     }
-  }
-
-  // Log opcional en desarrollo
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[apiFetch] ✅ ${res.status} ${url.pathname}`);
   }
 
   return data;

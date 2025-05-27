@@ -4,10 +4,8 @@ import { revalidateTag } from 'next/cache';
 import { usersService } from '../services/users.service';
 import type { CreateUserDto, UpdateUserDto } from '../types';
 
-const SECTOR = Number(process.env.NEXT_PUBLIC_SECTOR_ID);
-
 export async function createUserAction(payload: CreateUserDto) {
-  await usersService.create({ ...payload, sector: SECTOR });
+  await usersService.create(payload);
   revalidateTag('users');
 }
 
