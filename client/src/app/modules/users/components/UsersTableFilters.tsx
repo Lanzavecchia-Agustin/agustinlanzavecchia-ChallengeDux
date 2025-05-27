@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { SearchBar } from '../../../components/molecules/SearchBar';
 import { FilterSelect } from '../../../components/molecules/FilterSelect';
 import type { FilterOption } from '../../../components/molecules/FilterSelect';
-import type { UserStatus } from '../constants';
+import { SearchBar } from '../../../components/molecules/SearchBar';
 import { Button } from '../../../components/atoms/Button';
+import type { UserStatus } from '../constants';
 
 interface UserTableFiltersProps {
   searchTerm: string;
@@ -16,7 +16,6 @@ interface UserTableFiltersProps {
   sectorOptions: FilterOption<number>[];
   sectorFilter: number;
   onSectorChange: (sector: number) => void;
-  backgroundColor?: string;
 }
 
 export const UserTableFilters: React.FC<UserTableFiltersProps> = ({
@@ -28,7 +27,6 @@ export const UserTableFilters: React.FC<UserTableFiltersProps> = ({
   sectorOptions,
   sectorFilter,
   onSectorChange,
-  backgroundColor = 'rgba(100, 116, 139, 1)',
 }) => (
   <div className="flex gap-4 mb-4 items-center">
     <SearchBar
@@ -60,14 +58,14 @@ export const UserTableFilters: React.FC<UserTableFiltersProps> = ({
       <Button
         icon="pi pi-filter"
         className="text-white  p-button-outlined"
-        style={{ backgroundColor: backgroundColor }}
+        style={{ backgroundColor: 'rgba(100, 116, 139, 1)' }}
         disabled
         aria-label="Aplicar filtro"
       />
       <Button
         icon="pi pi-sliders-h"
         className="text-white p-button-outlined"
-        style={{ backgroundColor: backgroundColor }}
+        style={{ backgroundColor: 'rgba(100, 116, 139, 1)' }}
         disabled
         aria-label="Ajustes de tabla"
         severity="secondary"
