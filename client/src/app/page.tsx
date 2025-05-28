@@ -72,7 +72,7 @@ export default function UsersIntroPage() {
           <Button label="Vamos al proyecto" icon="pi pi-arrow-right" />
         </Link>
         <p className="text-sm text-secondary mt-2">
-          🔍 No olvides crear tu <code>.env.local</code> antes de levantar el servidor.
+          🔍 No olvides crear tu <code>.env</code> antes de levantar el servidor.
         </p>
       </div>
     </main>
