@@ -1,10 +1,18 @@
-// src/app/modules/users/services/users.service.ts
-
 import { apiFetch } from '@/app/lib/api';
 import type { ListUsersParams, User, CreateUserDto, UpdateUserDto } from '../types';
 
-const BASE = process.env.API_BASE!; // Ej: https://staging.duxsoftware.com.ar/api-test
+const BASE = process.env.API_BASE;
 const ENDPOINT = '/personal';
+
+const buildQueryParams = (params: ListUsersParams): URLSearchParams => {
+  return new URLSearchParams({
+    _page: String(params.page ?? 1),
+    _limit: String(params.limit ?? 10),
+    ...(params.q ? { q: params.q } : {}),
+    ...(params.estado ? { estado: params.estado } : {}),
+    ...(params.sector != null ? { sector: String(params.sector) } : {}),
+  });
+};
 
 export const usersService = {
   /**
@@ -12,13 +20,7 @@ export const usersService = {
    * React-Query usará este método.
    */
   list(params: ListUsersParams): Promise<User[]> {
-    const qp = new URLSearchParams({
-      _page: String(params.page ?? 1),
-      _limit: String(params.limit ?? 10),
-      ...(params.q ? { q: params.q } : {}),
-      ...(params.estado ? { estado: params.estado } : {}),
-      ...(params.sector != null ? { sector: String(params.sector) } : {}),
-    });
+    const qp = buildQueryParams(params);
     return apiFetch<User[]>(`${ENDPOINT}?${qp.toString()}`);
   },
 
@@ -27,14 +29,7 @@ export const usersService = {
    * Usado en Server Component para paginación.
    */
   async listWithCount(params: ListUsersParams): Promise<{ items: User[]; total: number }> {
-    const qp = new URLSearchParams({
-      _page: String(params.page ?? 1),
-      _limit: String(params.limit ?? 10),
-      ...(params.q ? { q: params.q } : {}),
-      ...(params.estado ? { estado: params.estado } : {}),
-      ...(params.sector != null ? { sector: String(params.sector) } : {}),
-    });
-
+    const qp = buildQueryParams(params);
     // Construye URL absoluta para evitar descartar path
     const url = `${BASE}${ENDPOINT}?${qp.toString()}`;
     const res = await fetch(url, { cache: 'no-store' });
@@ -42,7 +37,11 @@ export const usersService = {
       throw new Error(`Error cargando usuarios: ${res.status} ${res.statusText}`);
     }
 
-    const items = (await res.json()) as User[];
+    const data = await res.json();
+    if (!Array.isArray(data)) {
+      throw new Error('Expected array response from users API');
+    }
+    const items = data as User[];
     const total = Number(res.headers.get('X-Total-Count') ?? items.length);
     return { items, total };
   },

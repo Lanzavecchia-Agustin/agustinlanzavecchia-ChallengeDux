@@ -27,7 +27,9 @@ export function useUrlFilters(debounceMs = 500) {
    */
   const raw: SearchParams = {
     q: sp.get('q') ?? undefined,
-    estado: (sp.get('estado') as UserStatus) ?? undefined,
+    estado: Object.values(UserStatus).includes(sp.get('estado') as UserStatus)
+      ? (sp.get('estado') as UserStatus)
+      : undefined,
     sector: sp.get('sector') ?? undefined,
     page: sp.get('page') ?? undefined,
   };
@@ -76,7 +78,6 @@ export function useUrlFilters(debounceMs = 500) {
       });
       params.set('page', '1');
       router.replace(`${pathname}?${params.toString()}`);
-      router.refresh();
     },
     [sp, pathname, router],
   );

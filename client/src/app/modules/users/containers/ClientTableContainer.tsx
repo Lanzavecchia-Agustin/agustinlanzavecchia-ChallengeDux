@@ -24,7 +24,7 @@ export default function UsersTableClient({ ssrUsers, ssrTotal, initialParams }: 
   // 3) Reconstruimos los parámetros de consulta a partir de la URL,
   //    cayendo en initialParams si no existen en la queryString.
   const params: ListUsersParams = {
-    page: Number(searchParams.get('page') ?? initialParams.page),
+    page: Math.max(1, Number(searchParams.get('page') ?? initialParams.page) || 1),
     limit: initialParams.limit,
     q: searchParams.get('q') ?? initialParams.q,
     estado: (searchParams.get('estado') as UserStatus) ?? initialParams.estado,

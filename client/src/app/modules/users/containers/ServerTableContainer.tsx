@@ -11,7 +11,7 @@ export default async function UsersTableServer({
 }) {
   // 1) Construimos los parámetros de consulta a partir de los searchParams
   const params = {
-    page: Number(searchParams.page ?? '1'),
+    page: Math.max(1, Number(searchParams.page ?? '1') || 1),
     limit: 10,
     q: searchParams.q,
     estado: searchParams.estado,

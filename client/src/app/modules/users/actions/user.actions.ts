@@ -10,9 +10,10 @@ export async function createUserAction(payload: CreateUserDto) {
 }
 
 export async function updateUserAction(id: string, payload: UpdateUserDto) {
-  await usersService.update(id, payload);
+  const updatedUser = await usersService.update(id, payload);
   revalidateTag('users');
   revalidateTag(`user-${id}`);
+  return updatedUser;
 }
 
 export async function deleteUserAction(id: string) {
