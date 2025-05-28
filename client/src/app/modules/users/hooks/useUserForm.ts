@@ -1,78 +1,67 @@
-// src/app/modules/users/hooks/useUserForm.ts
+// --- src/app/modules/users/hooks/useUserForm.ts ---
 
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { DEFAULT_SECTOR, UserStatus } from '../constants';
 import type { User, CreateUserDto, UpdateUserDto } from '../types';
 import { useUpdateUser, useCreateUser } from './useUsers';
+import { Toast } from 'primereact/toast';
 
 /**
- * Construye los valores iniciales del formulario,
- * ya sea para creación (sin user) o edición (con user)
+ * Construye valores iniciales del formulario para creación o edición
  */
 function buildInitialForm(user?: User): CreateUserDto {
   return {
-    usuario: user?.usuario ?? '', // Nombre de usuario
-    estado: user?.estado ?? UserStatus.ACTIVO, // Estado inicial (activo de base)
-    sector: user?.sector ?? DEFAULT_SECTOR, // Sector por defecto si no existe user
+    usuario: user?.usuario ?? '',
+    estado: user?.estado ?? UserStatus.ACTIVO,
+    sector: user?.sector ?? DEFAULT_SECTOR,
   };
 }
 
 /**
- * Hook que maneja el estado y las acciones del formulario de usuario:
- * - Apertura/cierre del modal
- * - Carga de datos iniciales para crear o editar
- * - Envío a través de mutaciones (create/update)
+ * Hook que maneja el formulario de usuario:
+ * - Control del modal
+ * - Mutaciones create/update
+ * - Notificaciones Toast
  */
 export function useUserForm() {
-  // 1) Estado de visibilidad del modal
+  // Toast ref para notificaciones
+  const toastRef = useRef<Toast>(null);
+
+  // 1. Modal
   const [modalOpen, setModalOpen] = useState(false);
-  // 2) Usuario actual en edición (null = modo creación)
+  // 2. Usuario en edición (null = crear)
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  // 3) Valores del formulario (controlados)
+  // 3. Valores del formulario
   const [formValues, setFormValues] = useState<CreateUserDto>(() => buildInitialForm());
 
-  // 4) Hooks de mutación para crear/actualizar
-  const createUser = useCreateUser(); // mutateAsync para crear nuevo usuario
-  const updateUser = useUpdateUser(); // mutateAsync para actualizar usuario existente
+  // 4. Mutations
+  const createUser = useCreateUser();
+  const updateUser = useUpdateUser();
 
-  /**
-   * Abre el modal en modo creación:
-   * - Limpia currentUser
-   * - Resetea formValues
-   */
+  /** Abre modal en modo creación */
   const openCreate = () => {
     setCurrentUser(null);
     setFormValues(buildInitialForm());
     setModalOpen(true);
   };
 
-  /**
-   * Abre el modal en modo edición:
-   * - Asigna el usuario a editar
-   * - Carga sus valores en el formulario
-   */
+  /** Abre modal en modo edición */
   const openEdit = (user: User) => {
     setCurrentUser(user);
     setFormValues(buildInitialForm(user));
     setModalOpen(true);
   };
 
-  /**
-   * Cierra el modal y resetea todos los valores
-   */
+  /** Cierra modal y resetea formulario */
   const closeForm = () => {
     setModalOpen(false);
     setCurrentUser(null);
     setFormValues(buildInitialForm());
   };
 
-  /**
-   * Actualiza un campo específico del formulario
-   * - field: nombre de la propiedad en CreateUserDto
-   * - value: nuevo valor que se asignará
-   */
+  /** Actualiza campo del formulario */
   const setField = useCallback(
     <K extends keyof CreateUserDto>(field: K, value: CreateUserDto[K]) => {
       setFormValues((prev) => ({ ...prev, [field]: value }));
@@ -80,45 +69,50 @@ export function useUserForm() {
     [],
   );
 
-  /**
-   * Envía el formulario:
-   * - Si hay currentUser, hace update
-   * - Si no, crea un nuevo usuario
-   * - Cierra el modal al finalizar
-   */
+  /** Envía formulario y muestra toast */
   const submitForm = async () => {
     try {
       if (currentUser) {
-        // Update: enviar id + payload
         await updateUser.mutateAsync({ id: currentUser.id, payload: formValues as UpdateUserDto });
+        toastRef.current?.show({
+          severity: 'success',
+          summary: 'Usuario actualizado',
+          detail: `Se actualizó "${formValues.usuario}" correctamente`,
+          life: 3000,
+        });
       } else {
-        // Create: enviar payload
         await createUser.mutateAsync(formValues);
+        toastRef.current?.show({
+          severity: 'success',
+          summary: 'Usuario creado',
+          detail: `Se creó "${formValues.usuario}" correctamente`,
+          life: 3000,
+        });
       }
-      // Cerrar modal tras éxito
       closeForm();
     } catch (error) {
       console.error('Error saving user:', error);
-      // Aquí podrías agregar manejo de errores UX (toast, mensaje, etc.)
+      toastRef.current?.show({
+        severity: 'error',
+        summary: 'Error al guardar',
+        detail: `No se pudo ${currentUser ? 'actualizar' : 'crear'} el usuario. Intenta de nuevo.`,
+        life: 3000,
+      });
     }
   };
 
   return {
-    // Estado y valores
-    modalOpen, // boolean: muestra/oculta modal
-    formValues, // objeto controlado con los valores del formulario
-
-    // Acciones de apertura/cierre
+    // Control modal y formulario
+    modalOpen,
+    formValues,
     openCreate,
     openEdit,
     closeForm,
-
-    // Helpers de formulario
-    setField, // función para actualizar campos específicos
-    submitForm, // función para enviar el formulario
-
-    // Indicadores de estado y modo
-    isLoading: createUser.isPending || updateUser.isPending, // si alguna mutación está en progreso
-    isEdit: Boolean(currentUser), // true = edición, false = creación
+    setField,
+    submitForm,
+    isLoading: createUser.isPending || updateUser.isPending,
+    isEdit: Boolean(currentUser),
+    // Toast component y referencia
+    toastRef,
   };
 }
