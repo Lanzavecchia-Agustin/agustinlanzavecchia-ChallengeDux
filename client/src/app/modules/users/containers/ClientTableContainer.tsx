@@ -83,7 +83,6 @@ export default function UsersTableClient({ ssrUsers, ssrTotal, initialParams }: 
           openEdit(selectedUser);
         }}
         onDelete={handleDeleteUser}
-        deletingUserId={deleteUser.isPending ? deleteUser.variables : undefined}
       />
 
       {/* 8) Paginador */}

@@ -118,6 +118,12 @@ export function useUrlFilters(debounceMs = 500) {
   const handleSector = (sector: number) =>
     patchUrl({ sector: sector ? String(sector) : undefined });
 
+  // ---Método para limpiar todos los filtros ---
+  const clearFilters = () => {
+    setDraft('');
+    patchUrl({ q: undefined, estado: undefined, sector: undefined });
+  };
+
   return {
     raw,
     page,
@@ -130,5 +136,7 @@ export function useUrlFilters(debounceMs = 500) {
 
     handleEstado,
     handleSector,
+
+    clearFilters,
   };
 }

@@ -11,7 +11,7 @@ interface UsersTableProps {
   loading?: boolean;
   onRowSelect?: (user: User) => void;
   onDelete?: (user: User) => void;
-  deletingUserId?: string; // ID del usuario que se está eliminando
+  deletingUserId?: boolean;
 }
 
 export const UsersTable: React.FC<UsersTableProps> = ({
@@ -19,7 +19,6 @@ export const UsersTable: React.FC<UsersTableProps> = ({
   loading = false,
   onRowSelect,
   onDelete,
-  deletingUserId,
 }) => {
   const handleDeleteClick = (user: User, event: React.MouseEvent) => {
     event.stopPropagation();
@@ -38,19 +37,14 @@ export const UsersTable: React.FC<UsersTableProps> = ({
   };
 
   const actionBodyTemplate = (rowData: User) => {
-    const isDeleting = deletingUserId === rowData.id;
-
     return (
       <div className="flex justify-content-center">
         <Button
-          icon={isDeleting ? 'pi pi-spin pi-spinner' : 'pi pi-trash'}
-          className={`p-button-rounded p-button-text ${
-            isDeleting ? 'p-button-secondary' : 'p-button-danger'
-          }`}
+          icon="pi pi-trash"
+          className="p-button-rounded p-button-text p-button-danger"
           onClick={(e) => handleDeleteClick(rowData, e)}
-          tooltip={isDeleting ? 'Eliminando...' : 'Eliminar usuario'}
+          tooltip="Eliminar usuario"
           tooltipOptions={{ position: 'top' }}
-          disabled={isDeleting}
         />
       </div>
     );

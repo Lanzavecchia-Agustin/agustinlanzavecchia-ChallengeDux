@@ -1,8 +1,8 @@
 import { apiFetch } from '@/app/lib/api';
 import type { ListUsersParams, User, CreateUserDto, UpdateUserDto } from '../types';
+import { USERS_ENDPOINT } from '../constants';
 
 const BASE = process.env.API_BASE;
-const ENDPOINT = '/personal';
 
 const buildQueryParams = (params: ListUsersParams): URLSearchParams => {
   return new URLSearchParams({
@@ -21,7 +21,7 @@ export const usersService = {
    */
   list(params: ListUsersParams): Promise<User[]> {
     const qp = buildQueryParams(params);
-    return apiFetch<User[]>(`${ENDPOINT}?${qp.toString()}`);
+    return apiFetch<User[]>(`${USERS_ENDPOINT}?${qp.toString()}`);
   },
 
   /**
@@ -31,7 +31,7 @@ export const usersService = {
   async listWithCount(params: ListUsersParams): Promise<{ items: User[]; total: number }> {
     const qp = buildQueryParams(params);
     // Construye URL absoluta para evitar descartar path
-    const url = `${BASE}${ENDPOINT}?${qp.toString()}`;
+    const url = `${BASE}${USERS_ENDPOINT}?${qp.toString()}`;
     const res = await fetch(url, { cache: 'no-store' });
     if (!res.ok) {
       throw new Error(`Error cargando usuarios: ${res.status} ${res.statusText}`);
@@ -48,7 +48,7 @@ export const usersService = {
 
   /** Crea un nuevo usuario */
   create(payload: CreateUserDto) {
-    return apiFetch<User>(ENDPOINT, {
+    return apiFetch<User>(USERS_ENDPOINT, {
       method: 'POST',
       body: JSON.stringify(payload),
     });
@@ -56,7 +56,7 @@ export const usersService = {
 
   /** Actualiza un usuario existente */
   update(id: string, payload: UpdateUserDto) {
-    return apiFetch<User>(`${ENDPOINT}/${id}`, {
+    return apiFetch<User>(`${USERS_ENDPOINT}/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(payload),
     });
@@ -64,7 +64,7 @@ export const usersService = {
 
   /** Elimina un usuario por ID */
   remove(id: string) {
-    return apiFetch<void>(`${ENDPOINT}/${id}`, {
+    return apiFetch<void>(`${USERS_ENDPOINT}/${id}`, {
       method: 'DELETE',
     });
   },
