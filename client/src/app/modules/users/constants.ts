@@ -1,6 +1,6 @@
 import type { FilterOption } from '@/app/components/molecules/FilterSelect';
 
-export const DEFAULT_SECTOR = Number(process.env.NEXT_PUBLIC_SECTOR_ID ?? 7000);
+export const DEFAULT_SECTOR = Number(process.env.NEXT_PUBLIC_SECTOR_ID);
 
 export enum UserStatus {
   ACTIVO = 'ACTIVO',
