@@ -22,7 +22,7 @@ Este repositorio contiene la solución al **challenge técnico** de Dux Software
    Edita `.env` y completa:
 
    ```dotenv
-    # .env.local (ejemplo)
+    # .env (ejemplo)
     API_BASE=https://<TU_API_BASE>/api-test
     NEXT_PUBLIC_API_BASE=https://<TU_API_BASE>/api-test
     NEXT_PUBLIC_SECTOR_ID=<TU_SECTOR_ID>
