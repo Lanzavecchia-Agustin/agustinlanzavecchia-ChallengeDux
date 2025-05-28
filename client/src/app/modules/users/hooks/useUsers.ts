@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { CreateUserDto, ListUsersParams, UpdateUserDto, User } from '../types';
 import { usersService } from '../services/users.service';
-import { createUserAction, updateUserAction } from '../actions/user.actions';
+import { createUserAction, updateUserAction, deleteUserAction } from '../actions/user.actions';
 
 /**
  * Sistema centralizado de claves de query para usuarios
@@ -69,6 +69,33 @@ export function useCreateUser() {
         queryKey: userKeys.lists(),
         exact: false,
       });
+    },
+  });
+}
+
+/**
+ * Hook para eliminar usuario
+ */
+export function useDeleteUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => deleteUserAction(id),
+    onSuccess: (_, deletedId) => {
+      // Remover el usuario específico del caché
+      queryClient.removeQueries({
+        queryKey: userKeys.detail(deletedId),
+      });
+
+      // Invalidar todas las listas para refrescar los datos
+      queryClient.invalidateQueries({
+        queryKey: userKeys.lists(),
+        exact: false,
+      });
+    },
+    onError: (error) => {
+      console.error('Error eliminando usuario:', error);
+      // Aquí podrías agregar notificación de error
     },
   });
 }

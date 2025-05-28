@@ -1,5 +1,6 @@
 'use client';
 
+import { Toast } from 'primereact/toast';
 import { Button } from '../components/atoms/Button';
 import { Header } from '../components/organisms/Header';
 import { Sidebar } from '../components/organisms/Sidebar';
@@ -19,6 +20,7 @@ export default function UsersLayout({ children }: { children: React.ReactNode })
     submitForm,
     isLoading,
     isEdit,
+    toastRef,
   } = useUserForm();
 
   return (
@@ -42,6 +44,7 @@ export default function UsersLayout({ children }: { children: React.ReactNode })
             </div>
           </div>
 
+          <Toast ref={toastRef} />
           {/* Modal crear / editar */}
           <UsersFormModal
             visible={modalOpen}
