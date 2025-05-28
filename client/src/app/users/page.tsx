@@ -6,6 +6,9 @@ import ServerTableContainer from '../modules/users/containers/ServerTableContain
 
 export default function Page({ searchParams = {} }: { searchParams?: SearchParams }) {
   return (
+    <Suspense fallback={<UserTableSkeleton />}>
+      <ServerTableContainer searchParams={searchParams} />
+    </Suspense>
     // -------------------------------
     // 1) Suspense boundary aquí
     // -------------------------------
@@ -25,9 +28,5 @@ export default function Page({ searchParams = {} }: { searchParams?: SearchParam
     // - Cuando ServerTableContainer termina de resolver la promesa,
     //   React reemplaza el skeleton por la tabla real dentro del mismo
     //   lugar en el flujo de renderizado.
-
-    <Suspense fallback={<UserTableSkeleton />}>
-      <ServerTableContainer searchParams={searchParams} />
-    </Suspense>
   );
 }

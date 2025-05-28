@@ -1,5 +1,3 @@
-// --- src/app/modules/users/hooks/useUserForm.ts ---
-
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
@@ -102,7 +100,6 @@ export function useUserForm() {
   };
 
   return {
-    // Control modal y formulario
     modalOpen,
     formValues,
     openCreate,
@@ -112,7 +109,6 @@ export function useUserForm() {
     submitForm,
     isLoading: createUser.isPending || updateUser.isPending,
     isEdit: Boolean(currentUser),
-    // Toast component y referencia
     toastRef,
   };
 }
