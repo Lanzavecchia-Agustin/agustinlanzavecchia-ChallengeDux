@@ -21,7 +21,7 @@ export interface ListUsersParams {
 export interface SearchParams {
   page?: string;
   q?: string;
-  estado?: UserStatus | string;
+  estado?: UserStatus | undefined;
   sector?: string;
 }
 

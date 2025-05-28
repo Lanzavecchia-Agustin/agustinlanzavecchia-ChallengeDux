@@ -2,16 +2,16 @@ import { z } from 'zod';
 
 const API_BASE =
   typeof window === 'undefined' ? process.env.API_BASE! : process.env.NEXT_PUBLIC_API_BASE!;
-const DEFAULT_SECTOR = Number(process.env.NEXT_PUBLIC_SECTOR_ID!);
+const SECTOR = Number(process.env.NEXT_PUBLIC_SECTOR_ID!);
 
 if (!API_BASE) throw new Error('❌ API_BASE not defined.');
-if (!DEFAULT_SECTOR) throw new Error('❌ NEXT_PUBLIC_SECTOR_ID not defined.');
+if (!SECTOR) throw new Error('❌ NEXT_PUBLIC_SECTOR_ID not defined.');
 
-/** Solo para GET: añade ?sector=DEFAULT_SECTOR si no existe */
+/** Solo para GET: añade ?sector=SECTOR si no existe */
 function buildGetUrl(path: string): URL {
   const url = new URL(`${API_BASE}${path}`);
   if (!url.searchParams.has('sector')) {
-    url.searchParams.set('sector', String(DEFAULT_SECTOR));
+    url.searchParams.set('sector', String(SECTOR));
   }
   return url;
 }
@@ -19,7 +19,7 @@ function buildGetUrl(path: string): URL {
 /**
  * apiFetch genérico:
  * - GET → usa buildGetUrl (añade sector en query)
- * - POST/PATCH/DELETE → respeta payload.sector; inyecta DEFAULT_SECTOR solo si no viene
+ * - POST/PATCH/DELETE → respeta payload.sector; inyecta SECTOR solo si no viene
  */
 export async function apiFetch<T>(
   path: string,
@@ -32,7 +32,7 @@ export async function apiFetch<T>(
   if (method !== 'GET') {
     const payload = body ? JSON.parse(body) : {};
     if (payload.sector == null) {
-      payload.sector = DEFAULT_SECTOR;
+      payload.sector = SECTOR;
     }
     body = JSON.stringify(payload);
   }

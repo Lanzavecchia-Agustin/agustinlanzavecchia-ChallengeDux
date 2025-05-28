@@ -1,13 +1,13 @@
+// src/app/modules/users/components/UsersFormModal.tsx
 'use client';
 
-import React from 'react';
 import { Dialog } from 'primereact/dialog';
 import { Input } from '@/app/components/atoms/Input';
 import { Dropdown } from 'primereact/dropdown';
 import { Label } from '@/app/components/atoms/Label';
 import { Button } from '@/app/components/atoms/Button';
-import type { CreateUserDto, User } from '../types';
-import { STATUS_OPTIONS, DEFAULT_SECTOR, UserStatus, SECTOR_OPTIONS } from '../constants';
+import type { CreateUserDto } from '../types';
+import { STATUS_OPTIONS, SECTOR_OPTIONS, UserStatus } from '../constants';
 
 interface UsersFormModalProps {
   visible: boolean;
@@ -15,7 +15,6 @@ interface UsersFormModalProps {
   onSubmit: () => void;
   isLoading?: boolean;
   isEdit: boolean;
-  user: User | null;
   formData: CreateUserDto;
   setField: <K extends keyof CreateUserDto>(field: K, value: CreateUserDto[K]) => void;
 }
@@ -26,7 +25,6 @@ export const UsersFormModal: React.FC<UsersFormModalProps> = ({
   onSubmit,
   isLoading = false,
   isEdit,
-  user,
   formData,
   setField,
 }) => {
@@ -75,6 +73,7 @@ export const UsersFormModal: React.FC<UsersFormModalProps> = ({
             />
           </div>
 
+          {/* Sector */}
           <div className="field col-12">
             <Label htmlFor="sector">Sector</Label>
             <Dropdown
@@ -82,9 +81,7 @@ export const UsersFormModal: React.FC<UsersFormModalProps> = ({
               options={SECTOR_OPTIONS}
               optionLabel="label"
               optionValue="value"
-              placeholder="Seleccionar sector"
-              className="w-full"
-              value={formData.sector}
+              value={sectorValue}
               onChange={(e) => setField('sector', e.value)}
               required
             />
