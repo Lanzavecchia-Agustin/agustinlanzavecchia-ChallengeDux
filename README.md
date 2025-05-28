@@ -9,23 +9,26 @@ Este repositorio contiene la solución al **challenge técnico** de Dux Software
 1. Clona este repositorio:
 
    ```bash
-   git clone https://github.com/tu-usuario/NombreCandidato-ChallengeDux.git
-   cd NombreCandidato-ChallengeDux/client
+   git clone https://github.com/Lanzavecchia-Agustin/agustinlanzavecchia-ChallengeDux.git
+   cd agustinlanzavecchia-ChallengeDux/client
    ```
 
 2. Crea el archivo de variables de entorno basándote en `.env.example`:
 
    ```bash
-   cp .env.example .env.local
+   cp .env.example .env
    ```
 
-   Luego edita `.env.local` y completa:
+   Edita `.env` y completa:
 
    ```dotenv
-   API_BASE=https://staging.duxsoftware.com.ar/api-test
-   NEXT_PUBLIC_API_BASE=https://staging.duxsoftware.com.ar/api-test
-   NEXT_PUBLIC_SECTOR_ID=7000
+    # .env.local (ejemplo)
+    API_BASE=https://<TU_API_BASE>/api-test
+    NEXT_PUBLIC_API_BASE=https://<TU_API_BASE>/api-test
+    NEXT_PUBLIC_SECTOR_ID=<TU_SECTOR_ID>
    ```
+
+Luego, reemplaza `<TU_API_BASE>` y `<TU_SECTOR_ID>` por los valores correspondientes que te haya proporcionado tu equipo.
 
 3. Instala dependencias y ejecuta en modo desarrollo:
 
@@ -85,27 +88,6 @@ public/
 package.json
 ```
 
-## 🔧 Variables de entorno
-
-En el repositorio encontrarás un archivo `\.env\.example` con el formato y las variables necesarias. **No incluyas valores reales ni secretos en tu commit**: cada colaborador debe crear su propio `.env.local` basándose en ese ejemplo.
-
-```dotenv
-# .env.local (ejemplo)
-API_BASE=https://<TU_API_BASE>/api-test
-NEXT_PUBLIC_API_BASE=https://<TU_API_BASE>/api-test
-NEXT_PUBLIC_SECTOR_ID=<TU_SECTOR_ID>
-```
-
-Luego, reemplaza `<TU_API_BASE>` y `<TU_SECTOR_ID>` por los valores correspondientes que te haya proporcionado tu equipo.
-
-\-----------------------|--------------------------------------------------|------------------------------------------------------|
-\| `API_BASE`            | Base URL para fetch en Server Components (SSR)   | `https://staging.duxsoftware.com.ar/api-test`       |
-\| `NEXT_PUBLIC_API_BASE`| Base URL para fetch en Client Components (CSR)   | `https://staging.duxsoftware.com.ar/api-test`       |
-\| `NEXT_PUBLIC_SECTOR_ID`| Sector por defecto para todas las peticiones    | `7000`                                               |
-
-> **Nota:** copia `.env.example` a `.env.local` antes de arrancar.
-
----
 
 ## 🚀 Características principales
 
