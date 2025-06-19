@@ -3,8 +3,8 @@
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
-import { confirmDialog } from 'primereact/confirmdialog';
 import { User } from '../types';
+import { useUsersContext } from '../context/UsersContext';
 
 interface UsersTableProps {
   users: User[];
@@ -14,39 +14,25 @@ interface UsersTableProps {
   deletingUserId?: boolean;
 }
 
-export const UsersTable: React.FC<UsersTableProps> = ({
-  users,
-  loading = false,
-  onRowSelect,
-  onDelete,
-}) => {
-  const handleDeleteClick = (user: User, event: React.MouseEvent) => {
-    event.stopPropagation();
+export const UsersTable: React.FC<UsersTableProps> = ({ users, loading = false, onRowSelect }) => {
+  const { deleteUser } = useUsersContext();
 
-    confirmDialog({
-      message: `¿Estás seguro que deseas eliminar al usuario "${user.usuario}"?`,
-      header: 'Confirmar eliminación',
-      icon: 'pi pi-exclamation-triangle',
-      acceptClassName: 'p-button-danger',
-      acceptLabel: 'Eliminar',
-      rejectLabel: 'Cancelar',
-      accept: () => {
-        onDelete?.(user);
-      },
-    });
+  const handleDeleteClick = async (user: User, event: React.MouseEvent) => {
+    event.stopPropagation();
+    try {
+      await deleteUser(user);
+    } catch {}
   };
 
   const actionBodyTemplate = (rowData: User) => {
     return (
-      <div className="flex justify-content-center">
-        <Button
-          icon="pi pi-trash"
-          className="p-button-rounded p-button-text p-button-danger"
-          onClick={(e) => handleDeleteClick(rowData, e)}
-          tooltip="Eliminar usuario"
-          tooltipOptions={{ position: 'top' }}
-        />
-      </div>
+      <Button
+        icon="pi pi-trash"
+        className="p-button-rounded p-button-text p-button-danger action-button"
+        onClick={(e) => handleDeleteClick(rowData, e)}
+        tooltip="Eliminar usuario"
+        tooltipOptions={{ position: 'top' }}
+      />
     );
   };
 
@@ -55,7 +41,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
       value={users}
       loading={loading}
       rowHover
-      onRowClick={(e) => onRowSelect?.(e.data as User)}
+      onRowClick={(e) => onRowSelect?.(e.data as User)} // ← Esto solo se llama si no se propagó el evento
       className="cursor-pointer"
     >
       <Column field="id" header="ID" sortable style={{ width: '20%' }} />

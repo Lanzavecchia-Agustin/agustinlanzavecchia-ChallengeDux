@@ -25,7 +25,6 @@ export function useGetUsers(params: ListUsersParams, ssrData?: User[]) {
     queryKey: userKeys.list(params),
     queryFn: () => usersService.list(params),
     placeholderData: ssrData,
-    // ✅ Sin configuración duplicada - usa la global del provider
   });
 }
 
@@ -95,7 +94,6 @@ export function useDeleteUser() {
     },
     onError: (error) => {
       console.error('Error eliminando usuario:', error);
-      // Aquí podrías agregar notificación de error
     },
   });
 }
