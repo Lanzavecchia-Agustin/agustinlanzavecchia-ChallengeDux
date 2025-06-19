@@ -106,9 +106,8 @@ export function useUrlFilters(debounceMs = 500) {
   };
 
   // Al enviar el formulario (Enter), forza patchUrl inmediatamente
-  const handleSearchSubmit = (searchTerm: string) => {
+  const handleSearchSubmit = () => {
     debounced.flush();
-    patchUrl({ q: searchTerm });
   };
 
   // Cambiar filtro Estado

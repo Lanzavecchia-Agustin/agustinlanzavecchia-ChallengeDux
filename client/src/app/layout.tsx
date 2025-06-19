@@ -1,8 +1,8 @@
-import type { Metadata } from 'next';
 import localFont from 'next/font/local';
+import type { Metadata } from 'next';
 import { PrimeReactProvider } from 'primereact/api';
-import './globals.css';
 import { QueryClientProviderWrapper } from './providers/query-client-provider';
+import './globals.css';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',

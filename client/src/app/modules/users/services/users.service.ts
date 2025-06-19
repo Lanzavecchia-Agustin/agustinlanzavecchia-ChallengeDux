@@ -3,6 +3,7 @@ import type { ListUsersParams, User, CreateUserDto, UpdateUserDto } from '../typ
 import { USERS_ENDPOINT } from '../constants';
 
 const BASE = process.env.API_BASE;
+const DEFAULT_SECTOR = process.env.NEXT_PUBLIC_SECTOR_ID || '7000';
 
 const buildQueryParams = (params: ListUsersParams): URLSearchParams => {
   return new URLSearchParams({
@@ -10,7 +11,7 @@ const buildQueryParams = (params: ListUsersParams): URLSearchParams => {
     _limit: String(params.limit ?? 10),
     ...(params.q ? { q: params.q } : {}),
     ...(params.estado ? { estado: params.estado } : {}),
-    ...(params.sector != null ? { sector: String(params.sector) } : {}),
+    sector: String(params.sector ?? DEFAULT_SECTOR),
   });
 };
 
@@ -38,9 +39,6 @@ export const usersService = {
     }
 
     const data = await res.json();
-    if (!Array.isArray(data)) {
-      throw new Error('Expected array response from users API');
-    }
     const items = data as User[];
     const total = Number(res.headers.get('X-Total-Count') ?? items.length);
     return { items, total };

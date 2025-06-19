@@ -1,58 +1,43 @@
 'use client';
 
+import React from 'react';
 import { Dialog } from 'primereact/dialog';
-import { Input } from '@/app/components/atoms/Input';
-import { Dropdown } from 'primereact/dropdown';
-import { Label } from '@/app/components/atoms/Label';
 import { Button } from '@/app/components/atoms/Button';
-import type { CreateUserDto } from '../types';
-import { STATUS_OPTIONS, SECTOR_OPTIONS, UserStatus } from '../constants';
+import { useUsersContext } from '../context/UsersContext';
+import { UserStatus } from '../constants';
+import { InputText } from 'primereact/inputtext';
+import { Dropdown } from 'primereact/dropdown';
+import { SECTOR_OPTIONS } from '../constants';
 
-interface UsersFormModalProps {
-  visible: boolean;
-  onClose: () => void;
-  onSubmit: () => void;
-  isLoading?: boolean;
-  isEdit: boolean;
-  formData: CreateUserDto;
-  setField: <K extends keyof CreateUserDto>(field: K, value: CreateUserDto[K]) => void;
-}
+export function UsersFormModal() {
+  const { isModalOpen, currentUser, formValues, closeModal, setField, submitForm, isFormLoading } =
+    useUsersContext();
 
-export const UsersFormModal: React.FC<UsersFormModalProps> = ({
-  visible,
-  onClose,
-  onSubmit,
-  isLoading = false,
-  isEdit,
-  formData,
-  setField,
-}) => {
-  const sectorValue = formData.sector;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await submitForm();
+    } catch {}
+  };
+
+  const isEdit = Boolean(currentUser);
 
   return (
     <Dialog
+      visible={isModalOpen}
+      onHide={closeModal}
       header={isEdit ? 'Editar usuario' : 'Nuevo usuario'}
-      visible={visible}
       modal
-      onHide={onClose}
       style={{ width: '40rem' }}
     >
-      <form
-        className="p-fluid"
-        onSubmit={(e) => {
-          e.preventDefault();
-          onSubmit();
-        }}
-      >
+      <form className="p-fluid" onSubmit={handleSubmit}>
         <div className="grid formgrid">
           {/* Usuario */}
           <div className="field col-12">
-            <Label htmlFor="usuario">Nombre de usuario</Label>
-            <Input
+            <label htmlFor="usuario">Nombre de usuario</label>
+            <InputText
               id="usuario"
-              name="usuario"
-              placeholder="Nombre único"
-              value={formData.usuario}
+              value={formValues.usuario}
               onChange={(e) => setField('usuario', e.target.value)}
               required
             />
@@ -60,28 +45,30 @@ export const UsersFormModal: React.FC<UsersFormModalProps> = ({
 
           {/* Estado */}
           <div className="field col-12">
-            <Label htmlFor="estado">Estado</Label>
+            <label htmlFor="estado">Estado</label>
             <Dropdown
               id="estado"
-              options={STATUS_OPTIONS}
-              optionLabel="label"
-              optionValue="value"
-              value={formData.estado}
-              onChange={(e) => setField('estado', e.value as UserStatus)}
+              value={formValues.estado}
+              options={[
+                { label: 'Activo', value: UserStatus.ACTIVO },
+                { label: 'Inactivo', value: UserStatus.INACTIVO },
+              ]}
+              onChange={(e) => setField('estado', e.value)}
               required
             />
           </div>
 
           {/* Sector */}
           <div className="field col-12">
-            <Label htmlFor="sector">Sector</Label>
+            <label htmlFor="sector">Sector</label>
             <Dropdown
               id="sector"
+              value={formValues.sector}
               options={SECTOR_OPTIONS}
               optionLabel="label"
               optionValue="value"
-              value={sectorValue}
               onChange={(e) => setField('sector', e.value)}
+              placeholder="Seleccionar sector"
               required
             />
           </div>
@@ -91,18 +78,18 @@ export const UsersFormModal: React.FC<UsersFormModalProps> = ({
           <Button
             type="submit"
             label={isEdit ? 'Actualizar' : 'Crear'}
-            loading={isLoading}
-            disabled={isLoading}
+            loading={isFormLoading}
+            disabled={isFormLoading}
           />
           <Button
             type="button"
             label="Cancelar"
             className="p-button-outlined"
             severity="secondary"
-            onClick={onClose}
+            onClick={closeModal}
           />
         </div>
       </form>
     </Dialog>
   );
-};
+}

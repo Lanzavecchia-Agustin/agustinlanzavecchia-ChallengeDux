@@ -1,10 +1,8 @@
-// app/users/containers/ServerTableContainer.tsx
-
 import type { SearchParams } from '../types';
-import ClientTableContainer from './ClientTableContainer';
 import { usersService } from '../services/users.service';
+import UsersTableClient from '../components/UsersTableClient';
 
-export default async function UsersTableServer({
+export default async function UsersTableView({
   searchParams = {},
 }: {
   searchParams?: SearchParams;
@@ -25,5 +23,5 @@ export default async function UsersTableServer({
 
   // 3) Cuando la promesa se cumple, React continúa el renderizado
   //    reemplazando el fallback (skeleton) por este JSX:
-  return <ClientTableContainer ssrUsers={users} ssrTotal={total} initialParams={params} />;
+  return <UsersTableClient ssrUsers={users} ssrTotal={total} />;
 }

@@ -29,7 +29,7 @@ export const UserTableFilters: React.FC = () => {
         <SearchBar
           value={draft}
           onChange={handleSearchChange}
-          onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit(draft)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()}
           placeholder="Buscar por nombre o apellido"
         />
 

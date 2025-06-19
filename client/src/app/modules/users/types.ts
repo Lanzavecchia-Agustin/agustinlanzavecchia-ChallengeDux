@@ -34,3 +34,21 @@ export interface CreateUserDto {
 
 /** DTO para edición: todos opcionales */
 export type UpdateUserDto = Partial<CreateUserDto>;
+
+export interface UsersContextValue {
+  // Modal actions
+  openCreateModal: () => void;
+  openEditModal: (user: User) => void;
+  closeModal: () => void;
+
+  // Toast notifications
+  showSuccessToast: (message: string) => void;
+  showErrorToast: (message: string) => void;
+
+  // Form state
+  isModalOpen: boolean;
+  isLoading: boolean;
+
+  // User operations
+  deleteUser: (user: User) => Promise<void>;
+}
